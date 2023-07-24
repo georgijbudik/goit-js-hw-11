@@ -12,6 +12,7 @@ const refs = {
 
 let searchQuery = '';
 let prevSearchQuery = '';
+let currentPage = 1;
 
 async function handleSubmit(e) {
   e.preventDefault();
