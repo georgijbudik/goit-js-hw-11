@@ -13,6 +13,7 @@ const refs = {
 let searchQuery = '';
 let prevSearchQuery = '';
 let currentPage = 1;
+const MAX_CARDS_PER_PAGE = 40;
 
 async function handleSubmit(e) {
   e.preventDefault();
@@ -24,10 +25,10 @@ async function handleSubmit(e) {
   if (searchQuery === prevSearchQuery) {
     return;
   }
+  prevSearchQuery = searchQuery;
   clearGallery();
   hideLoadMoreBtn();
   currentPage = 1;
-
   try {
     const { hits, totalHits } = await fetchImages(searchQuery, currentPage);
     if (hits.length === 0) {
@@ -36,17 +37,24 @@ async function handleSubmit(e) {
       );
       return;
     }
+
     renderImageCards(hits);
+    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+    if (totalHits <= MAX_CARDS_PER_PAGE) {
+      hideLoadMoreBtn();
+      Notiflix.Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+      return;
+    }
     showLoadMoreBtn();
     lightbox.refresh();
-    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
     currentPage += 1;
     checkIfEndOfResults(hits.length, totalHits);
   } catch (error) {
     hideLoadMoreBtn();
     Notiflix.Notify.failure('Failed to fetch images. Please try again.');
   }
-  prevSearchQuery = searchQuery;
 }
 
 const renderImageCards = images => {
@@ -85,7 +93,6 @@ const createCards = ({
 </div></a>`;
 
 async function onLoadMore() {
-  showLoadMoreBtn();
   try {
     const { hits, totalHits } = await fetchImages(searchQuery, currentPage);
     if (hits.length === 0) {
@@ -93,16 +100,22 @@ async function onLoadMore() {
       return;
     }
     renderImageCards(hits);
+    const totalPages = Math.ceil(totalHits / MAX_CARDS_PER_PAGE);
+    if (currentPage < totalPages) {
+      showLoadMoreBtn();
+    } else {
+      hideLoadMoreBtn();
+      Notiflix.Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+    }
     scrollToNextPage();
-    showLoadMoreBtn();
     lightbox.refresh();
     currentPage += 1;
     checkIfEndOfResults(hits.length, totalHits);
   } catch (error) {
     hideLoadMoreBtn();
-    Notiflix.Notify.failure(
-      "We're sorry, but you've reached the end of search results."
-    );
+    Notiflix.Notify.failure('Failed to fetch images. Please try again.');
   }
 }
 

@@ -11,7 +11,7 @@ export async function fetchImages(searchQuery, page) {
     orientation: 'horizontal',
     safesearch: true,
     per_page: 40,
-    page,
+    page: page,
   };
   const response = await axios.get(BASE_URL, { params });
   const { hits, totalHits } = response.data;
