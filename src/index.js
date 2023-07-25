@@ -108,6 +108,7 @@ async function onLoadMore() {
       Notiflix.Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
+      return;
     }
     scrollToNextPage();
     lightbox.refresh();
