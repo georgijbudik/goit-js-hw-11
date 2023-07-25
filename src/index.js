@@ -39,6 +39,7 @@ async function handleSubmit(e) {
     }
 
     renderImageCards(hits);
+    lightbox.refresh();
     Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
     if (totalHits <= MAX_CARDS_PER_PAGE) {
       hideLoadMoreBtn();
@@ -48,7 +49,6 @@ async function handleSubmit(e) {
       return;
     }
     showLoadMoreBtn();
-    lightbox.refresh();
     currentPage += 1;
     checkIfEndOfResults(hits.length, totalHits);
   } catch (error) {
@@ -100,6 +100,7 @@ async function onLoadMore() {
       return;
     }
     renderImageCards(hits);
+    lightbox.refresh();
     const totalPages = Math.ceil(totalHits / MAX_CARDS_PER_PAGE);
     if (currentPage < totalPages) {
       showLoadMoreBtn();
@@ -111,7 +112,6 @@ async function onLoadMore() {
       return;
     }
     scrollToNextPage();
-    lightbox.refresh();
     currentPage += 1;
     checkIfEndOfResults(hits.length, totalHits);
   } catch (error) {
